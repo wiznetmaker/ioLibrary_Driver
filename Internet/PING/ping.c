@@ -10,15 +10,29 @@ PINGMSG pingmsg_reply;
 
 int8_t ping_auto(uint8_t s, uint8_t *addr)
 {
+  int retval = 0;
   uint16_t size = 0;
 
   switch (getSn_SR(s))
   {
     case SOCK_IPRAW:
-      ping_request(s, addr);
+      if ((retval = ping_request(s, addr)) <= 0)
+      {
+#ifdef _PING_DEBUG_
+        /* @todo: Handle errors. */
+#endif /* _PING_DEBUG_ */
+        return PING_SOCKET_ERR;
+      }
+
       if ((size = getSn_RX_RSR(s)) > 0)
       {
-        ping_reply(s, addr, size);
+        if ((retval = ping_reply(s, addr, size)) <= 0)
+        {
+#ifdef _PING_DEBUG_
+          /* @todo: Handle errors. */
+#endif /* _PING_DEBUG_ */
+          return PING_SOCKET_ERR;
+        }
       }
       break;
 
@@ -29,7 +43,7 @@ int8_t ping_auto(uint8_t s, uint8_t *addr)
 #else
       /* @todo: Handle exceptions. */
 #endif
-      if (socket(s, Sn_MR_IPRAW, 0x00, 0x00) != s)
+      if ((retval = socket(s, Sn_MR_IPRAW, 0x00, 0x00)) != s)
       {
 #ifdef _PING_DEBUG_
         /* @todo: Handle errors. */
@@ -41,6 +55,8 @@ int8_t ping_auto(uint8_t s, uint8_t *addr)
     default:
       break;
   }
+
+  return PING_OK;
 }
 
 int8_t ping_request(uint8_t s, uint8_t *addr)

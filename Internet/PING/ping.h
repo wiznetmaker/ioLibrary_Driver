@@ -15,13 +15,13 @@ extern "C"
  */
 #define _PING_DEBUG_
 
-#define PING_DATA_SIZE       33
+#define PING_DATA_SIZE       32
 
 #define PING_TYPE_REQUEST    8
 #define PING_TYPE_REPLY      0
 #define PING_CODE_ZERO       0
 #if (_WIZCHIP_ == W5100)
-#define PING_IDENTIFIER      0x13EC
+#define PING_IDENTIFIER      0x0241
 #elif (_WIZCHIP_ == W5100S)
 #define PING_IDENTIFIER      getVER()
 #elif ((_WIZCHIP_ == W5200) || (_WIZCHIP_ == W5500))
